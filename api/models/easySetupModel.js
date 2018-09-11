@@ -16,10 +16,11 @@ function initConnman() {
                 }
                 wifi = wifiL;
                 // Cache the WiFi Networks
-                wifiL.getNetworks(function(err, list) {
+                wifi.getNetworks(function(err, list) {
                     console.log("networks: ", wifi.getServicesString(list));
+                    return wifi;
                 });
-            });
+            }); 
         });
     }
 }
