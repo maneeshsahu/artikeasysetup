@@ -1,14 +1,14 @@
 'use strict';
+var exec = require('child_process').execSync;
 // Wi-Fi Setup
-const serialNumber = process.env.SERIAL_NUMBER
-const mac1Address = process.env.MAC1_ADDRESS
-
 const artik = require('artik-sdk');
 const settings = require('../../settings')
 var wifi = artik.wifi;
-var wifi_station,
-    wifi_ap;
+var wifi_station = null,
+    wifi_ap = null;
 var cachedWifiNetworks = {};
+var serialNumber = process.env.SERIAL_NUMBER;
+var mac1Address = process.env.MAC1_ADDRESS;
 
 var actions_button = settings.button, 
 	actions_led = settings.led;
@@ -23,6 +23,10 @@ function startAP () {
 	
 	console.log('setLED( ' + actions_led + ') value: ' + ledState);
     ledState ^= 1;
+
+    // Disconnect as Station
+    console.log("Disconnecting as Wifi Station");
+    wifi_station.disconnect();
     
     wifi_ap = wifi.wifi_ap();
     wifi_ap.on('started', function() {
@@ -36,8 +40,7 @@ function startAP () {
         console.log("Pass : '" + pwd + "'");
         console.log("Channel : '" + channel + "'");
         console.log("OpenMode : '" + openmode + "'");
-        var res = wifi_ap.start_ap(ssid, pwd, channel, openmode ?
-                wifi_ap.WIFI_ENCRYPTION_OPEN : wifi_ap.WIFI_ENCRYPTION_WPA2);
+        var res = wifi_ap.start_ap(ssid, pwd, channel, wifi_ap.WIFI_ENCRYPTION_OPEN);
         console.log("Result => '" + res + "'");
     });
 }
@@ -65,6 +68,8 @@ button.on('changed', function (value) {
 	startAP();
 });
 button.request();
+
+startStation();
 
 
 exports.sayHello = function(req, res) {
