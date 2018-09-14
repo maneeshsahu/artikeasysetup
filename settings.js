@@ -23,7 +23,7 @@ const settings = {
 }
 
 function getButton() {
-	switch (artik.get_platform_name()) {
+	switch (artik.get_platform_name().toLowerCase()) {
 		case 'Artik 710':
 			// SW403
 			return 30;
@@ -36,11 +36,11 @@ function getButton() {
 		default:
 			console.log("Invalid Platform name: " + artik.get_platform_name());
 	    	process.exit(-1);
-	}		
+	}	
 }
 
 function getLED() {
-	switch (artik.get_platform_name()) {
+	switch (artik.get_platform_name().toLowerCase()) {
 		case 'Artik 710':
 			return 28;
 		case 'Artik 530':
