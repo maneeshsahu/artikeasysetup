@@ -5,4 +5,4 @@ export MAC1_ADDRESS=(`ip addr show $(awk 'NR==3{print $1}' /proc/net/wireless | 
 
 echo $SERIAL_NUMBER $MAC1_ADDRESS
 
-node /usr/local/ble-onboarding/index.js
+node index.js

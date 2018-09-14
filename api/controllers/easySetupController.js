@@ -1,8 +1,35 @@
 'use strict';
 // Wi-Fi Setup
-var wifi = require('artik-sdk').wifi;
+const serialNumber = process.env.SERIAL_NUMBER
+const mac1Address = process.env.MAC1_ADDRESS
 
+const artik = require('artik-sdk');
+const settings = require('../../settings')
+var wifi = artik.wifi;
 var cachedWifiNetworks = {};
+
+var actions_button = settings.button, 
+	actions_led = settings.led;
+
+var button = new artik.gpio(actions_button, 'button', 'in', 'rising', 0);
+var led  = new artik.gpio(actions_led, 'led', 'out', 'none', 0);
+
+var ledState = 1;
+function toggleLED () {
+	led.request();
+	led.write(ledState);
+	led.release();
+	
+	console.log('setLED( ' + actions_led + ') value: ' + ledState);
+	ledState ^= 1;
+}
+
+button.on('changed', function (value) {
+	console.log("button pressed");
+	toggleLED();
+});
+button.request();
+
 
 var wifi_station = new wifi.wifi_station();
 wifi_station.on('started', function() {
@@ -40,3 +67,10 @@ exports.configureWifi = function(req, res) {
     var response = {};    
     res.json(response);    
 };
+
+process.on('SIGINT', function () {
+	console.log('exiting');
+	button.release();
+	
+	process.exit(0);
+});
